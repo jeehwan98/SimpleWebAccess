@@ -1,0 +1,27 @@
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    command: npm run dev
+    environment:
+      - BACKEND_URL=http://backend:8080
+    depends_on:
+      - backend
+
+  backend:
+    build: ./backend
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend:/app
+      - maven_cache:/root/.m2
+    environment:
+      - SPRING_PROFILES_ACTIVE=local
+
+volumes:
+  maven_cache:
