@@ -1,0 +1,23 @@
+replicaCount: 1
+
+image:
+  repository: nginx
+  tag: alpine
+  pullPolicy: Always
+
+service:
+  type: NodePort
+  port: 80
+  nodePort: 30080
+
+frontend:
+  host: frontend-svc
+  port: 3000
+
+backend:
+  host: backend-svc
+  port: 8080
+
+# kube-dns ClusterIP — get with:
+# kubectl get svc kube-dns -n kube-system -o jsonpath='{.spec.clusterIP}'
+dnsResolver: "172.20.0.10"

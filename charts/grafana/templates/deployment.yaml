@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: grafana
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 3000
+          env:
+            - name: GF_SECURITY_ADMIN_USER
+              value: {{ .Values.admin.user | quote }}
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              value: {{ .Values.admin.password | quote }}
+          resources:
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
+          volumeMounts:
+            - name: grafana-datasource
+              mountPath: /etc/grafana/provisioning/datasources/datasource.yaml
+              subPath: datasource.yaml
+            - name: grafana-dashboard-provider
+              mountPath: /etc/grafana/provisioning/dashboards/provider.yaml
+              subPath: provider.yaml
+            - name: grafana-dashboard-backend
+              mountPath: /var/lib/grafana/dashboards/backend.json
+              subPath: backend.json
+      volumes:
+        - name: grafana-datasource
+          configMap:
+            name: {{ .Release.Name }}-datasource
+        - name: grafana-dashboard-provider
+          configMap:
+            name: {{ .Release.Name }}-dashboard-provider
+        - name: grafana-dashboard-backend
+          configMap:
+            name: {{ .Release.Name }}-dashboard-backend

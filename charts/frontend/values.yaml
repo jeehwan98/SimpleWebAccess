@@ -1,0 +1,13 @@
+replicaCount: 1
+
+image:
+  repository: 136492549638.dkr.ecr.ap-southeast-1.amazonaws.com/simplewebaccess-prod-frontend
+  tag: latest
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 3000
+
+env:
+  BACKEND_URL: "http://backend-svc:8080"

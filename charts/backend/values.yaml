@@ -1,0 +1,15 @@
+replicaCount: 1
+
+image:
+  repository: 136492549638.dkr.ecr.ap-southeast-1.amazonaws.com/simplewebaccess-prod-backend
+  tag: latest
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 8080
+
+env:
+  SPRING_PROFILES_ACTIVE: prod
+  SQS_QUEUE_URL: "https://sqs.ap-southeast-1.amazonaws.com/136492549638/simplewebaccess-prod-queue"
+  S3_BUCKET: "simplewebaccess-prod-contacts"
