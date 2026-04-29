@@ -24,6 +24,18 @@ resource "aws_route53_zone" "main" {
   alias record instead of a CNAME because ALBs have dynamic IPs that change over time
   Route53 alias resolves directly to the ALB and tracks its IPs automatically
 */
+resource "aws_route53_record" "apex" {
+  zone_id = aws_route53_zone.main.zone_id
+  name    = "simplewebaccess.com"
+  type    = "A"
+
+  alias {
+    name                   = aws_lb.main.dns_name
+    zone_id                = aws_lb.main.zone_id
+    evaluate_target_health = true
+  }
+}
+
 resource "aws_route53_record" "www" {
   zone_id = aws_route53_zone.main.zone_id
   name    = "www.simplewebaccess.com"

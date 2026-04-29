@@ -53,7 +53,7 @@ backend:
     port: 8080
   env:
     SPRING_PROFILES_ACTIVE: prod
-    SQS_QUEUE_URL: ""
+    SQS_QUEUE_URL: "https://sqs.ap-southeast-1.amazonaws.com/136492549638/simplewebaccess-prod-queue"
     S3_BUCKET: "simplewebaccess-prod-contacts"
   resources:
     requests:
