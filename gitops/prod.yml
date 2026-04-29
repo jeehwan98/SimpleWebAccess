@@ -1,0 +1,104 @@
+# Production environment values
+# Usage: helm install <release> ./charts/<chart> -f gitops/prod.yml
+
+nginx-proxy:
+  replicaCount: 2
+  image:
+    repository: nginx
+    tag: alpine
+    pullPolicy: Always
+  service:
+    type: NodePort
+    port: 80
+    nodePort: 30080
+  frontend:
+    host: frontend-svc
+  backend:
+    host: backend-svc
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 300m
+      memory: 256Mi
+
+frontend:
+  replicaCount: 2
+  image:
+    repository: 136492549638.dkr.ecr.ap-southeast-1.amazonaws.com/simplewebaccess-prod-frontend
+    tag: latest
+    pullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 3000
+  env:
+    BACKEND_URL: "http://backend-svc:8080"
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+backend:
+  replicaCount: 2
+  image:
+    repository: 136492549638.dkr.ecr.ap-southeast-1.amazonaws.com/simplewebaccess-prod-backend
+    tag: latest
+    pullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 8080
+  env:
+    SPRING_PROFILES_ACTIVE: prod
+    SQS_QUEUE_URL: ""
+    S3_BUCKET: "simplewebaccess-prod-contacts"
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+prometheus:
+  replicaCount: 1
+  image:
+    repository: prom/prometheus
+    tag: v2.51.0
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 9090
+  retention: 15d
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+grafana:
+  replicaCount: 1
+  image:
+    repository: grafana/grafana
+    tag: "10.4.0"
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 3000
+  admin:
+    user: admin
+    password: admin
+  datasource:
+    url: http://prometheus-svc:9090
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 300m
+      memory: 256Mi
